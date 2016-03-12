@@ -95,6 +95,7 @@ function onload() {
             var name = str.substring(loc, loc2);
 
             // Create and append the thumbnail to the document
+            // TODO: Use jQuery instead of manual DOM manipulation
             var figure = document.createElement('figure');
             figure.id = 'figure-' + moid;
             var img = document.createElement('img');
