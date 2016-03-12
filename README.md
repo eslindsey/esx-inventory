@@ -28,4 +28,13 @@ https://your-esxi-host/esx-inventory/
   * TODO: What permissions are required to access MOB and show thumbnails?
 
 ## Customization
-By default, the script will scale the thumbnail and extract a sub region of the VM's display, based on the parameters present in `index.js`.
+By default, the script will scale the thumbnail and extract a sub region of the VM's display, based on the parameters present in `index.js`. Initially the configuration is set for VMs with a 4:3 aspect ratio, but by modifying `imgWidth` and `imgHeight` you can tailor the script to your needs.
+
+## Credits
+Naturally, this project would not have been possible without some help from the web.
+
+Big thanks to William Lam for his excellent article on VM screenshots, which made me realize this project could be accomplished:
+https://blogs.vmware.com/vsphere/2013/01/capturing-virtual-machine-screenshots-in-vsphere.html
+
+And of course, using the MOB to obtain the moid of the VMs:
+https://kb.vmware.com/kb/1017126
