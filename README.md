@@ -28,7 +28,7 @@ https://your-esxi-host/esx-inventory/
   * TODO: What permissions are required to access MOB and show thumbnails?
 
 ## Customization
-By default, the script will scale the thumbnail and extract a sub region of the VM's display, based on the parameters present in `index.js`. Initially the configuration is set for VMs with a 4:3 aspect ratio, but by modifying `imgWidth` and `imgHeight` you can tailor the script to your needs.
+By default, the script will scale the thumbnail and extract a sub region of the VM's display, based on the parameters present in [index.js](../blob/master/index.js). Initially the configuration is set for VMs with a 4:3 aspect ratio, but by modifying `imgWidth` and `imgHeight` you can tailor the script to your needs.
 
 ## Credits
 Naturally, this project would not have been possible without some help from the web.
