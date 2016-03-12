@@ -19,6 +19,10 @@ imgHeight = 256;
 /** Timeout is used to store the timer for the next thumbnail refresh. **/
 timeout   = null;
 
+/**
+ * Dispays an error message.
+ * @param  message  Error message to display
+ */
 function error(message) {
 	document.getElementById('loading').style.display = 'none';
 	var div = document.createElement('div');
@@ -27,9 +31,14 @@ function error(message) {
 	document.body.appendChild(div);
 }
 
+/**
+ * Triggered when the page loads.
+ */
 function onload() {
+	// Use AJAX to communicate with the MOB
 	var xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function() {
+		// Wait until the document is done
         if (xhttp.readyState != 4 || xhttp.status != 200) {
             return;
         }
@@ -58,83 +67,86 @@ function onload() {
         // Look for the first VM
         loc = str.indexOf('<a href="/');
         while (loc != -1) {
-            // Extract the VM information (moid and name)
-            loc = str.indexOf('>', loc + 1);
-            if (loc == -1) {
-                error('Could not locate beginning of moid!');
-                return;
-            }
-            loc++;
-            var loc2 = str.indexOf('<', loc + 2);
-            if (loc2 == -1) {
-                error('Could not locate end of moid!');
-                return;
-            }
-            var moid = str.substring(loc, loc2);
-            loc = str.indexOf(' (', loc2 + 4);
-            if (loc == -1) {
-                error('Could not locate beginning of VM name!');
-                return;
-            }
-            loc += 2;
-            loc2 = str.indexOf('</td>', loc + 3);
-            if (loc2 == -1) {
-                error('Could not locate end of VM name!');
-                return;
-            }
-            loc2 -= 1;
-            var name = str.substring(loc, loc2);
-
-            // Create and append the thumbnail to the document
-            var figure = document.createElement('figure');
-            figure.id = 'figure-' + moid;
-            var img = document.createElement('img');
-            var src = '/screen?id=' + moid;
-            // Specify the width and height of the image
-            if (typeof imgHeight != 'undefined') {
-                src += '&h=' + imgHeight;
-                img.height = imgHeight;
-            }
-            if (typeof imgWidth != 'undefined') {
-                src += '&w=' + imgWidth;
-                img.width = imgWidth;
-            }
-            // If we want a sub region, add those parameters
-            if (typeof imgX0 != 'undefined')  src += '&x0=' + imgX0;
-            if (typeof imgY0 != 'undefined')  src += '&y0=' + imgY0;
-            if (typeof imgX1 != 'undefined')  src += '&x1=' + imgX1;
-            if (typeof imgY1 != 'undefined')  src += '&y1=' + imgY1;
-            img.src = src + '&t=0';
-            $(img).bind({
-            	// Reset our timeout so all images refresh 7.5s after the last one loads
-                load: function() {
-                    if (timeout != null) {
-                        window.clearTimeout(timeout);
-                    }
-                    timeout = window.setTimeout(refreshAll, 7500);
-                },
-                // If the VM is not running or has no thumbnail, remove it
-                error: function() {
-                    $(this.parentElement).remove();
-                }
-            });
-            figure.appendChild(img);
-            var figcaption = document.createElement('figcaption');
-            figcaption.appendChild(document.createTextNode(name));
-            figure.appendChild(figcaption);
-            document.body.appendChild(figure);
-
-            // Look for the next VM
-            loc = str.indexOf('<a href="/', loc2 + 4);
-        }
+        	// Extract the VM information (moid and name)
+			loc = str.indexOf('>', loc + 1);
+			if (loc == -1) {
+				error('Could not locate beginning of moid!');
+				return;
+			}
+			loc++;
+			var loc2 = str.indexOf('<', loc + 2);
+			if (loc2 == -1) {
+				error('Could not locate end of moid!');
+				return;
+			}
+			var moid = str.substring(loc, loc2);
+			loc = str.indexOf(' (', loc2 + 4);
+			if (loc == -1) {
+				error('Could not locate beginning of VM name!');
+				return;
+			}
+			loc += 2;
+			loc2 = str.indexOf('</td>', loc + 3);
+			if (loc2 == -1) {
+				error('Could not locate end of VM name!');
+				return;
+			}
+			loc2 -= 1;
+			var name = str.substring(loc, loc2);
+	
+			// Create and append the thumbnail to the document
+			var figure = document.createElement('figure');
+			figure.id = 'figure-' + moid;
+			var img = document.createElement('img');
+			var src = '/screen?id=' + moid;
+			// Specify the width and height of the image
+			if (typeof imgHeight != 'undefined') {
+				src += '&h=' + imgHeight;
+				img.height = imgHeight;
+			}
+			if (typeof imgWidth != 'undefined') {
+				src += '&w=' + imgWidth;
+				img.width = imgWidth;
+			}
+			// If we want a sub region, add those parameters
+			if (typeof imgX0 != 'undefined')  src += '&x0=' + imgX0;
+			if (typeof imgY0 != 'undefined')  src += '&y0=' + imgY0;
+			if (typeof imgX1 != 'undefined')  src += '&x1=' + imgX1;
+			if (typeof imgY1 != 'undefined')  src += '&y1=' + imgY1;
+			img.src = src + '&t=0';
+			$(img).bind({
+				load: function() {
+					// Reset our timeout so all images refresh 7.5s after the last one loads
+					if (timeout != null) {
+						window.clearTimeout(timeout);
+					}
+					timeout = window.setTimeout(refreshAll, 7500);
+				},
+				error: function() {
+					// If the VM is not running or has no thumbnail, remove it
+					$(this.parentElement).remove();
+				}
+			});
+			figure.appendChild(img);
+			var figcaption = document.createElement('figcaption');
+			figcaption.appendChild(document.createTextNode(name));
+			figure.appendChild(figcaption);
+			document.body.appendChild(figure);
+	
+			// Look for the next VM
+			loc = str.indexOf('<a href="/', loc2 + 4);
+		}
 
         // Hide the 'Loading...' text
         document.getElementById('loading').style.display = 'none';
-    };
-    xhttp.open('GET', '/mob/?moid=ha-folder-vm', true);
-    xhttp.send();
+	};
+	xhttp.open('GET', '/mob/?moid=ha-folder-vm', true);
+	xhttp.send();
 }
 
+/**
+ * Refreshes all of the thumbnails.
+ */
 function refreshAll() {
     var t = (new Date()).getTime();
     $('img').each(function() {
